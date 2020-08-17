@@ -2,6 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 
+export enum UserRole {
+  ADMIN = 'admin',
+  USER = 'user',
+}
+
 export interface IUser {
   email: string;
   name: string;
@@ -23,6 +28,12 @@ export class User extends Document {
     required: true,
   })
   password: string;
+
+  @Prop({
+    enum: Object.values(UserRole),
+    default: UserRole.USER,
+  })
+  role: string;
 
   // TODO
   async matchPassword(enteredPassword: string): Promise<boolean> {

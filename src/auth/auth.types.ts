@@ -4,6 +4,7 @@ type AccessTokenResponse = {
 
 type ValidatePayload = {
   username: string;
+  role: string;
   sub: any;
   iat: number;
   exp: number;
@@ -11,5 +12,6 @@ type ValidatePayload = {
 
 type ValidateResult = {
   username: string;
+  role: string;
   userId: number;
 };

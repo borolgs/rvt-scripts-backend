@@ -15,3 +15,10 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: 'rvt-scripts'
           heroku_email: 'borolgs@gmail.com'
+          usedocker: true
+          docker_build_args: |
+            MONGO_URI
+            GITHUB_REPO
+            GITHUB_USERNAME
+            GUTHUB_TOKEN
+            JWT_SECRET

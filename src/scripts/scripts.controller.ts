@@ -15,12 +15,14 @@ import { ScriptsService, MasterInfo } from './scripts.service';
 import { Request as Req, Response } from 'express';
 import { Cache } from 'cache-manager';
 import { Readable } from 'stream';
+import { AppLogger } from 'src/logger/app-logger.service';
 
 @Controller()
 @UseGuards(JwtAuthGuard)
 export class ScriptsController {
   constructor(
     private readonly scriptsService: ScriptsService,
+    private readonly logger: AppLogger,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -37,6 +39,7 @@ export class ScriptsController {
     @Res() res: Response,
     @Headers('Scripts-Sha') userSha: string,
   ): Promise<any> {
+    this.logger.log('Get all scripts');
     let serverMasterInfo: MasterInfo = await this.cacheManager.get('sha');
     if (!serverMasterInfo) {
       const info = await this.scriptsService.getMasterInfo();

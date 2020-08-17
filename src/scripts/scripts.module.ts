@@ -1,6 +1,7 @@
 import { Module, CacheModule } from '@nestjs/common';
 import { ScriptsService } from './scripts.service';
 import { ScriptsController } from './scripts.controller';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
   imports: [
@@ -8,6 +9,7 @@ import { ScriptsController } from './scripts.controller';
       ttl: 360,
       max: 30,
     }),
+    LoggerModule,
   ],
   providers: [ScriptsService],
   controllers: [ScriptsController],

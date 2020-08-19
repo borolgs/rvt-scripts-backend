@@ -4,8 +4,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
 import { ConfigService } from '@nestjs/config';
-import { ValidationPipe } from './validation.pipe';
-import { AppLogger } from './logger/app-logger.service';
+import { ValidationPipe } from './modules/validation.pipe';
+import { AppLogger } from './modules/logger/app-logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

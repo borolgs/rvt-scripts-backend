@@ -10,12 +10,12 @@ import {
   CACHE_MANAGER,
   Headers,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ScriptsService, MasterInfo } from './scripts.service';
 import { Request as Req, Response } from 'express';
 import { Cache } from 'cache-manager';
 import { Readable } from 'stream';
-import { AppLogger } from 'src/logger/app-logger.service';
+import { AppLogger } from '../logger/app-logger.service';
 
 @Controller()
 @UseGuards(JwtAuthGuard)

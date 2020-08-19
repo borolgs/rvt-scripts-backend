@@ -1,7 +1,7 @@
 import { Module, CacheModule } from '@nestjs/common';
 import { ScriptsService } from './scripts.service';
 import { ScriptsController } from './scripts.controller';
-import { LoggerModule } from 'src/logger/logger.module';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [

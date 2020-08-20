@@ -17,9 +17,7 @@ export class CodeEntity {
 
     for (const filepath of filepaths) {
       const allowedExts = ['.py', '.xaml'];
-      const isAllowedFile =
-        filepath.includes('src/scripts') &&
-        allowedExts.includes(path.parse(filepath).ext);
+      const isAllowedFile = filepath.includes('src/scripts') && allowedExts.includes(path.parse(filepath).ext);
       if (!isAllowedFile) continue;
       const zipObj = zip.file(filepath);
       const buffer = await zipObj.async('nodebuffer');

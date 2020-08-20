@@ -1,82 +1,45 @@
-import {
-  Controller,
-  Get,
-  UseGuards,
-  Request,
-  UseInterceptors,
-  CacheInterceptor,
-  Res,
-  Inject,
-  CACHE_MANAGER,
-  Headers,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Res, Inject, CACHE_MANAGER, Headers } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ScriptsService, MasterInfo } from './scripts.service';
-import { Request as Req, Response } from 'express';
+import { Response } from 'express';
 import { Cache } from 'cache-manager';
 import { Readable } from 'stream';
 import { AppLogger } from '../logger/app-logger.service';
+import { GetCodeUseCaseSymbol, GetCodeUseCase } from 'src/domains/ports/in/get-code.use-case';
+import { GetCodeCommand } from 'src/domains/ports/in/get-code.command';
+import { MasterCodeEntity } from 'src/domains/entities/master-code.entity';
 
 @Controller()
 @UseGuards(JwtAuthGuard)
 export class ScriptsController {
   constructor(
-    private readonly scriptsService: ScriptsService,
+    @Inject(GetCodeUseCaseSymbol)
+    private readonly scriptsService: GetCodeUseCase,
     private readonly logger: AppLogger,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  @Get('api/v1/scripts/*')
-  @UseInterceptors(CacheInterceptor)
-  async findAll(@Request() req: Req): Promise<any> {
-    const path = req.path.split('api/v1/scripts/')[1];
-    const data = await this.scriptsService.get(path);
-    return data;
-  }
-
   @Get('api/v1/scripts')
-  async getAll(
-    @Res() res: Response,
-    @Headers('Scripts-Sha') userSha: string,
-  ): Promise<any> {
+  async getAll(@Res() res: Response, @Headers('Scripts-Sha') userSha: string): Promise<any> {
     this.logger.log('Get all scripts');
-    let serverMasterInfo: MasterInfo = await this.cacheManager.get('sha');
-    if (!serverMasterInfo) {
-      const info = await this.scriptsService.getMasterInfo();
-      await this.cacheManager.set('sha', info, { ttl: 360 });
-      serverMasterInfo = info;
-    }
+    const command = new GetCodeCommand(userSha);
+    const result = await this.scriptsService.getCode(command);
 
-    if (serverMasterInfo.sha === userSha) {
+    if (!result) {
       return res.status(204).send();
     }
 
-    const dataFromCache = await this.cacheManager.get('master');
-    if (dataFromCache && dataFromCache.info.sha === serverMasterInfo.sha) {
-      return this.createResponse(res, dataFromCache);
-    }
-
-    const { buffer } = await this.scriptsService.getFullRepo();
-    const data = { buffer, info: serverMasterInfo };
-
-    await this.cacheManager.set('master', data, { ttl: 60 * 60 * 24 });
-
-    return this.createResponse(res, data);
+    return this.createResponse(res, result);
   }
 
-  private async createResponse(
-    res: Response,
-    data: { buffer: Buffer; info: MasterInfo },
-  ) {
-    const { buffer, info } = data;
-
+  private async createResponse(res: Response, data: MasterCodeEntity) {
+    const { code, info } = data;
     const stream = new Readable();
-    stream.push(buffer);
+    stream.push(code.buffer);
     stream.push(null);
 
     res.set({
       'Content-Type': 'application/zip',
-      'Content-Length': buffer.length,
+      'Content-Length': code.buffer.length,
       'Scripts-Sha': info.sha,
     });
     return stream.pipe(res);

@@ -1,7 +1,6 @@
-import { Controller, Get, UseGuards, Res, Inject, CACHE_MANAGER, Headers } from '@nestjs/common';
+import { Controller, Get, UseGuards, Res, Inject, Headers } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Response } from 'express';
-import { Cache } from 'cache-manager';
 import { Readable } from 'stream';
 import { AppLogger } from '../logger/app-logger.service';
 import { GetCodeUseCaseSymbol, GetCodeUseCase } from 'src/domains/ports/in/get-code.use-case';
@@ -15,7 +14,6 @@ export class ScriptsController {
     @Inject(GetCodeUseCaseSymbol)
     private readonly scriptsService: GetCodeUseCase,
     private readonly logger: AppLogger,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   @Get('api/v1/scripts')

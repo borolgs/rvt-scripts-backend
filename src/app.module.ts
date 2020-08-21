@@ -6,6 +6,7 @@ import config from './modules/config';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ScriptsModule } from './modules/scripts/scripts.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -21,5 +22,6 @@ import { ScriptsModule } from './modules/scripts/scripts.module';
     UsersModule,
     ScriptsModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
